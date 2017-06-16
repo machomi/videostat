@@ -1,0 +1,16 @@
+machine:
+  java:
+    version: openjdk8
+  services:
+    - docker
+#  environment:
+#    videostat_ffprobe-path: ffprobe
+    
+dependencies:
+  # install ffmpeg
+  pre:
+    - sudo add-apt-repository -y ppa:mc3man/trusty-media && sudo apt-get update && sudo apt-get install -y ffmpeg gstreamer0.10-ffmpeg
+    
+test:
+  post:
+    - mvnw docker:build

@@ -2,7 +2,9 @@
 
 Videostat is a simplistic application which investigate video file and returns some video metadata. 
 
-Application name refers to unix *stat* function.
+Application name refers to similarity with unix *stat* function.
+
+[![CircleCI](https://circleci.com/gh/machomic/videostat.svg?style=svg)](https://circleci.com/gh/machomic/videostat)
 
 ## Caveats
 
@@ -46,7 +48,7 @@ To check if image is in your local storage type:
 
 `docker images`
 
-You should find image with videostat.
+You should be able to find image with name videostat.
 
 To run your image as local container type:
 

@@ -5,7 +5,7 @@ spring:
       max-request-size: 30MB
 
 videostat:
-  ffprobe-path: C:/tools/ffmpeg/bin/ffprobe
+  ffprobe-path: ffprobe
   supported-formats:
     - 'video/x-flv'
     - 'video/mp4'
