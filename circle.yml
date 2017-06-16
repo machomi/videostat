@@ -14,3 +14,11 @@ test:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
     - mvn docker:build
+    
+deployment:
+  docker:
+    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+    - docker tag videostat:latest mmachowski/videostat:${CIRCLE_BUILD_NUM}
+    - docker tag videostat:latest mmachowski/videostat:latest
+    - docker push mmachowski/videostat
+    

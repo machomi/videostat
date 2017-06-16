@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: videostat
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: videostat
+    spec:
+      containers:
+      - name: videostat-app
+        image: mmachowski/videostat
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
