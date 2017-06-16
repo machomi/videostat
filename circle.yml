@@ -37,9 +37,5 @@ deployment:
       - docker tag videostat:latest mmachowski/videostat:${CIRCLE_BUILD_NUM}
       - docker tag videostat:latest mmachowski/videostat:latest
       - docker push mmachowski/videostat
-  gce:
-    branch: master
-    commands:
       - kubectl apply -f k8
       - kubectl get svc videostat
-    
