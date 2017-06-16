@@ -12,6 +12,6 @@ spec:
       containers:
       - name: videostat-app
         image: mmachowski/videostat
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080

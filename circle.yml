@@ -3,11 +3,25 @@ machine:
     version: openjdk8
   services:
     - docker
+  environment:
+    PROJECT_NAME: videostat-170920
+    CLUSTER_NAME: cluster-1
+    CLOUDSDK_COMPUTE_ZONE: europe-west1-b
     
 dependencies:
-  # install ffmpeg
   pre:
+    # install ffmpeg
     - sudo add-apt-repository -y ppa:mc3man/trusty-media && sudo apt-get update && sudo apt-get install -y ffmpeg gstreamer0.10-ffmpeg
+    # configure gclodu and kubectl to
+    - sudo /opt/google-cloud-sdk/bin/gcloud --quiet components update
+    - sudo /opt/google-cloud-sdk/bin/gcloud --quiet components update kubectl
+    - echo $GC_AUTH | base64 --decode -i > ${HOME}/account-auth.json
+    - sudo /opt/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file ${HOME}/account-auth.json
+    - sudo /opt/google-cloud-sdk/bin/gcloud config set project $PROJECT_NAME
+    - sudo /opt/google-cloud-sdk/bin/gcloud --quiet config set container/cluster $CLUSTER_NAME
+    # Reading the zone from the env var is not working so we set it here
+    - sudo /opt/google-cloud-sdk/bin/gcloud config set compute/zone ${CLOUDSDK_COMPUTE_ZONE}
+    - sudo /opt/google-cloud-sdk/bin/gcloud --quiet container clusters get-credentials $CLUSTER_NAME
     
 test:
   post:
@@ -23,4 +37,9 @@ deployment:
       - docker tag videostat:latest mmachowski/videostat:${CIRCLE_BUILD_NUM}
       - docker tag videostat:latest mmachowski/videostat:latest
       - docker push mmachowski/videostat
+
+  gce:
+    commands:
+      - kubectl apply -f k8
+      - kubectl get svc videostat
     
