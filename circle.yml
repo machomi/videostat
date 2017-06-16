@@ -3,8 +3,6 @@ machine:
     version: openjdk8
   services:
     - docker
-#  environment:
-#    videostat_ffprobe-path: ffprobe
     
 dependencies:
   # install ffmpeg
@@ -13,4 +11,6 @@ dependencies:
     
 test:
   post:
-    - mvnw docker:build
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+    - mvn docker:build
