@@ -1,0 +1,17 @@
+spring:
+  http:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 30MB
+
+videostat:
+  ffprobe-path: C:/tools/ffmpeg/bin/ffprobe
+  supported-formats:
+    - 'video/x-flv'
+    - 'video/mp4'
+    - 'application/x-mpegURL'
+    - 'video/MP2T'
+    - 'video/3gpp'
+    - 'video/quicktime'
+    - 'video/x-msvideo'
+    - 'video/x-ms-wmv'
