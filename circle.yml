@@ -17,8 +17,10 @@ test:
     
 deployment:
   docker:
-    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-    - docker tag videostat:latest mmachowski/videostat:${CIRCLE_BUILD_NUM}
-    - docker tag videostat:latest mmachowski/videostat:latest
-    - docker push mmachowski/videostat
+    branch: master
+    commands:
+      - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+      - docker tag videostat:latest mmachowski/videostat:${CIRCLE_BUILD_NUM}
+      - docker tag videostat:latest mmachowski/videostat:latest
+      - docker push mmachowski/videostat
     
