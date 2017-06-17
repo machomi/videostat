@@ -22,24 +22,12 @@ dependencies:
     # Reading the zone from the env var is not working so we set it here
     - sudo /opt/google-cloud-sdk/bin/gcloud config set compute/zone ${CLOUDSDK_COMPUTE_ZONE}
     - sudo /opt/google-cloud-sdk/bin/gcloud --quiet container clusters get-credentials $CLUSTER_NAME
-    # newman for api test
-    - npm install -g newman
     
 test:
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
     - mvn docker:build
-    # run docker image for api test
-    - docker run -p 8080:8080 --name videostat -d videostat
-    # wait for spring to run
-    - sleep 10
-    - echo "[{ \"url\" : \"$(docker machine ip)\" }]" > data.json
-    # run api test
-    - pushd src/test/api && newman run Videostat.postman_collection.json -e Local.postman_environment -d data.json -n 1 --delay-request 300 -r html,cli,junit && popd
-    # stop docker container
-    - docker stop videostat
-    - find . -type f -regex ".*/src/test/api/newman/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
     
 deployment:
   docker:
