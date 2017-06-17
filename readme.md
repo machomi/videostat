@@ -8,7 +8,7 @@ Application name refers to some similarity with unix *stat* function.
 
 ## Caveats
 
-Application requires FFmpeg library to be installed on the host system. To install it go to https://ffmpeg.org/.
+Application requires FFmpeg library to be installed on the host system. To install it go to: https://ffmpeg.org/ and follow instructions provided there.
 
 Upload file size is limited to 25MB.
 
@@ -16,7 +16,7 @@ Upload file size is limited to 25MB.
 
 There is a configuration file _application.yml_ which contains some custom configuration.
 
-Available options
+Available options:
 
 **ffprobe-path** - defines path to ffprobe which is a part of ffmpeg library.
 
@@ -73,15 +73,50 @@ Now application will be available at http://you_docker_host:8080.
 
 ## Exposed endpoints
 
-There is only one pretty useful POST endpoint: http://localhost:8080/video/meta
+First you need to authenticate user and get JWT access token:
+
+```
+curl -X POST \
+  http://localhost:8080/oauth/token \
+  -H 'authorization: Basic dmlkZW9jbGllbnQ6' \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/x-www-form-urlencoded' \
+  -d 'username=videouser&password=p%40ssw0rd&grant_type=password'
+```
+  
+Please copy access token from json response and use it in following request as authorization header value.
+
+---
+
+Apart from authentication there is only one pretty useful POST endpoint: **http://localhost:8080/video/stat**
 
 Example curl command to use it:
 
-`curl -X POST   http://localhost:8080/video/stat  -H "content-type: multipart/form-data" -F "video=@sample.mp4;type=video/mp4"`
+```
+curl -X POST \
+  http://localhost:8080/video/stat \
+  -H 'accept: application/json' \
+  -H 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0OTc3NjIwMDgsInVzZXJfbmFtZSI6InZpZGVvdXNlciIsImF1dGhvcml0aWVzIjpbInZpZGVvIl0sImp0aSI6IjNhZGU1ZmRlLWNkMDgtNDFlMy05Y2YwLTMyYmU1MzVkODc5NiIsImNsaWVudF9pZCI6InZpZGVvY2xpZW50Iiwic2NvcGUiOlsidmlkZW8iXX0._erRssbJTmkYRDv42i206cUmXnxnTZd8eVKkLx9ZCsI' \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: multipart/form-data' \
+  -F 'video=@sample.mp4;type=video/mp4'
+```
+
+## Authentication
+
+For the purpose of this demo project application supports OAuth2 JWT authentication process. However there is no specific database yet.
+
+In memory credentials are:
+
+* username: **videouser**
+* password: **p@ssw0rd**
+* clientId: **videoclient** 
 
 ## Testing
 
-TBD
+There are pretty extensive unit and integration test to this project. Considering project size integration tests are not extracted to seperate test profile. 
+
+Command `mvn integration-test` will take care of all project test except api test. 
 
 ## Dockerization
 
@@ -124,4 +159,24 @@ TBD
 
 ## Demo
 
-TBD
+Demo is hosted on Google Cloud Container claster: **104.155.121.39** 
+
+
+```
+curl -X POST \
+  http://104.155.121.39:8080/oauth/token \
+  -H 'authorization: Basic dmlkZW9jbGllbnQ6' \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/x-www-form-urlencoded' \
+  -d 'username=videouser&password=p%40ssw0rd&grant_type=password' | jq --raw-output '.access_token'
+```
+  
+```
+curl -X POST \
+  http://104.155.121.39:8080/video/stat \
+  -H 'accept: application/json' \
+  -H 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0OTc3NjIwMDgsInVzZXJfbmFtZSI6InZpZGVvdXNlciIsImF1dGhvcml0aWVzIjpbInZpZGVvIl0sImp0aSI6IjNhZGU1ZmRlLWNkMDgtNDFlMy05Y2YwLTMyYmU1MzVkODc5NiIsImNsaWVudF9pZCI6InZpZGVvY2xpZW50Iiwic2NvcGUiOlsidmlkZW8iXX0._erRssbJTmkYRDv42i206cUmXnxnTZd8eVKkLx9ZCsI' \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: multipart/form-data' \
+  -F 'video=@sample.mp4;type=video/mp4'
+```
