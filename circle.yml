@@ -3,7 +3,6 @@ machine:
     version: openjdk8
   services:
     - docker
-    - node
   environment:
     PROJECT_NAME: videostat-170920
     CLUSTER_NAME: cluster-1
