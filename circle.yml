@@ -34,8 +34,9 @@ test:
     - docker run -p 8080:8080 --name videostat -d videostat
     # wait for spring to run
     - sleep 10
+    - echo "[{ \"url\" : \"$(docker machine ip)\" }]" > data.json
     # run api test
-    - pushd src/test/api && sh test.sh && popd
+    - pushd src/test/api && newman run Videostat.postman_collection.json -e Local.postman_environment -d data.json -n 1 --delay-request 300 -r html,cli,junit && popd
     # stop docker container
     - docker stop videostat
     - find . -type f -regex ".*/src/test/api/newman/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
