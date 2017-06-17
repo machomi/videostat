@@ -31,7 +31,7 @@ test:
     - find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
     - mvn docker:build
     # run docker image for api test
-    - docker run -p 8080:8080 --name videostat videostat -d
+    - docker run -p 8080:8080 --name videostat -d videostat
     # wait for spring to run
     - sleep 10
     # run api test
