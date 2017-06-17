@@ -3,6 +3,7 @@ machine:
     version: openjdk8
   services:
     - docker
+    - node
   environment:
     PROJECT_NAME: videostat-170920
     CLUSTER_NAME: cluster-1
@@ -22,12 +23,23 @@ dependencies:
     # Reading the zone from the env var is not working so we set it here
     - sudo /opt/google-cloud-sdk/bin/gcloud config set compute/zone ${CLOUDSDK_COMPUTE_ZONE}
     - sudo /opt/google-cloud-sdk/bin/gcloud --quiet container clusters get-credentials $CLUSTER_NAME
+    # newman for api test
+    - npm install -g newman
     
 test:
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
     - mvn docker:build
+    # run docker image for api test
+    - docker run -p 8080:8080 --name videostat videostat -d
+    # wait for spring to run
+    - sleep 10
+    # run api test
+    - pushd src/test/api && sh test.sh && popd
+    # stop docker container
+    - docker stop videostat
+    - find . -type f -regex ".*/src/test/api/newman/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
     
 deployment:
   docker:
@@ -39,5 +51,6 @@ deployment:
       - docker push mmachowski/videostat
       - sudo chown -R ubuntu:ubuntu /home/ubuntu/.kube
       - sudo chown -R $USER /home/ubuntu/.config
+      - kubectl delete pods $(kubectl get po --selector=app=videostat -o name | sed 's/pods\///')
       - kubectl apply -f k8
       - kubectl get svc videostat

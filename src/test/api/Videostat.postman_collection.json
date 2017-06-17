@@ -1,0 +1,242 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Videostat",
+		"_postman_id": "b8803a00-9e99-78d9-b2fe-ae086e9c4051",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Signin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Access token test\"] = jsonData.access_token !== null;",
+							"postman.setGlobalVariable(\"access_token\", jsonData.access_token);",
+							"",
+							"",
+							""
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"if (!postman.getGlobalVariable(\"username\")) {",
+							"    postman.setGlobalVariable(\"username\", \"videouser\");",
+							"}",
+							"if (!postman.getGlobalVariable(\"password\")) {",
+							"    postman.setGlobalVariable(\"password\", \"p@ssw0rd\");",
+							"}",
+							"postman.setGlobalVariable(\"clientId\", btoa(\"videoclient:\"));    ",
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{url}}/oauth/token",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "Basic {{clientId}}",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "text",
+							"warning": ""
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "text",
+							"warning": ""
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text",
+							"warning": ""
+						}
+					]
+				},
+				"description": "Sign in user"
+			},
+			"response": []
+		},
+		{
+			"name": "POST Video",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// happy path",
+							"",
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Content-Type is json \"] = postman.getResponseHeader(\"Content-Type\") === \"application/json;charset=UTF-8\";",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Response contains duration\"] = jsonData.duration !== null;",
+							"tests[\"Response contains width\"] = jsonData.size.width !== null;",
+							"tests[\"Response contains height\"] = jsonData.size.height !== null;",
+							"tests[\"Response contains videoBitRate\"] = jsonData.videoBitRate !== null;",
+							"tests[\"Response contains videoCodec\"] = jsonData.videoCodec !== null;",
+							"tests[\"Response contains audioBitRate\"] = jsonData.audioBitRate !== null;",
+							"tests[\"Response contains audioCodec\"] = jsonData.audioCodec !== null;",
+							"",
+							"",
+							"",
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{url}}/video/stat",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "video",
+							"description": "",
+							"type": "file",
+							"src": "../resources/sample.mp4"
+						}
+					]
+				},
+				"description": "Send video file and get its metadata"
+			},
+			"response": []
+		},
+		{
+			"name": "POST Empty Video",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 400\"] = responseCode.code === 400;",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Expecting validation error\"] = jsonData.message === \"Validation error\";",
+							"tests[\"Expecting message - Uploaded file cannot be empty\"] = jsonData.fieldErrors[0].message === \"Uploaded file cannot be empty\";"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{url}}/video/stat",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "video",
+							"description": "",
+							"type": "file",
+							"src": "../resources/empty.avi"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "POST Video without auth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// unauthorized path",
+							"",
+							"tests[\"Status code is 401\"] = responseCode.code === 401;",
+							"",
+							"",
+							"",
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{url}}/video/stat",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "video",
+							"description": "",
+							"type": "file",
+							"src": "../resources/sample.mp4"
+						}
+					]
+				},
+				"description": "Send video file but without authorization details. Expects 401"
+			},
+			"response": []
+		}
+	]
+}

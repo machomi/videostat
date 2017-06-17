@@ -153,9 +153,11 @@ Current process includes steps:
 * publishing image in docker hub registry
 * deploying application into google cloud container engine (using kubernates cluster)
 
+Configuration is defined in _circle.yml_ file.
+
 ## Api Testing
 
-TBD
+There are api tests prepared using POSTMAN GUI and NEWMAN command tools. You can find them under **src/test/api** folder. There is also dedicated readme file explaining how to install this tool and run these tests from command line.  
 
 ## Demo
 
