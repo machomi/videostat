@@ -1,6 +1,6 @@
 # Videostat
 
-Videostat is a simplistic application which investigate video file and returns some video metadata. 
+Videostat is a simplistic application which investigates video file and returns some video metadata. 
 
 Application name refers to some similarity with unix *stat* function.
 
@@ -165,19 +165,23 @@ Demo is hosted on Google Cloud Container claster: **104.155.121.39**
 
 
 ```
-curl -X POST \
+export TOKEN=$(curl -X POST \
   http://104.155.121.39:8080/oauth/token \
   -H 'authorization: Basic dmlkZW9jbGllbnQ6' \
   -H 'cache-control: no-cache' \
   -H 'content-type: application/x-www-form-urlencoded' \
-  -d 'username=videouser&password=p%40ssw0rd&grant_type=password' | jq --raw-output '.access_token'
+  -d 'username=videouser&password=p%40ssw0rd&grant_type=password' | jq --raw-output '.access_token')
 ```
-  
+
+```
+wget http://www.sample-videos.com/video/mp4/480/big_buck_bunny_480p_1mb.mp4 -O sample.mp4
+```
+
 ```
 curl -X POST \
   http://104.155.121.39:8080/video/stat \
   -H 'accept: application/json' \
-  -H 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0OTc3NjIwMDgsInVzZXJfbmFtZSI6InZpZGVvdXNlciIsImF1dGhvcml0aWVzIjpbInZpZGVvIl0sImp0aSI6IjNhZGU1ZmRlLWNkMDgtNDFlMy05Y2YwLTMyYmU1MzVkODc5NiIsImNsaWVudF9pZCI6InZpZGVvY2xpZW50Iiwic2NvcGUiOlsidmlkZW8iXX0._erRssbJTmkYRDv42i206cUmXnxnTZd8eVKkLx9ZCsI' \
+  -H "authorization: Bearer $TOKEN" \
   -H 'cache-control: no-cache' \
   -H 'content-type: multipart/form-data' \
   -F 'video=@sample.mp4;type=video/mp4'
