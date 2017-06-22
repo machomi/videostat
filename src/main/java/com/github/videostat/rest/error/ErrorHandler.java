@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartException;
 
+import com.github.videostat.meta.VideoMetaException;
+
 @ControllerAdvice
 public class ErrorHandler {
 
@@ -38,6 +40,13 @@ public class ErrorHandler {
 
 	@Value("${spring.http.multipart.max-file-size:}")
 	private String fileSizeLimit;
+
+	@ExceptionHandler(VideoMetaException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseBody
+	public ErrorDTO processInvalidVideoException(VideoMetaException e) {
+		return new ErrorDTO(message(ErrorConstants.ERR_VIDEO_PROCESSING));
+	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)

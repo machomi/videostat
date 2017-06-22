@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.videostat.meta.VideoMetaException;
 import com.github.videostat.rest.dto.VideoFileDTO;
 import com.github.videostat.rest.dto.VideoMetadataDTO;
 import com.github.videostat.service.VideoService;
@@ -34,7 +35,7 @@ public class VideoController {
     }
 	
 	@PostMapping("/stat")
-	public VideoMetadataDTO stat(@Valid VideoFileDTO videoDTO) throws IOException {
+	public VideoMetadataDTO stat(@Valid VideoFileDTO videoDTO) throws IOException, VideoMetaException {
 		return videoService.process(videoDTO);
 	}
 

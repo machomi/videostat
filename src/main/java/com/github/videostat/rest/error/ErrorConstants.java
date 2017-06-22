@@ -8,6 +8,7 @@ public final class ErrorConstants {
     public static final String ERR_INTERNAL_SERVER_ERROR = "error.internalServerError";
 	public static final String ERR_FILE_LIMIT = "error.fileLimitExceeded";
 	public static final String ERR_REQUEST_LIMIT = "error.fileLimitExceeded";
+	public static final String ERR_VIDEO_PROCESSING = "error.videoProcessing";
 
     private ErrorConstants() {
     }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.videostat.meta.VideoMetaException;
 import com.github.videostat.meta.VideoMetaExtractor;
 import com.github.videostat.rest.dto.VideoFileDTO;
 import com.github.videostat.rest.dto.VideoMetadataDTO;
@@ -19,7 +20,7 @@ public class VideoService {
 	@Autowired
 	VideoMetaExtractor videoMetaService;
 	
-	public VideoMetadataDTO process(VideoFileDTO videoFileDTO) throws IOException {
+	public VideoMetadataDTO process(VideoFileDTO videoFileDTO) throws IOException, VideoMetaException {
 		// store file for further processing 
 		String path = videoStorage.store(videoFileDTO.getVideo());
 		// extract metadata
